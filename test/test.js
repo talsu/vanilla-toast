@@ -14,8 +14,7 @@ describe('vanilla-toast test', function(){
 
   it('should be run ui', function(done){
     vanillaToast.initElement();
-    vanillaToast.show('hello world');
-    //vanillaToast.showCloseButton();
+    vanillaToast.show('hello world. 안녕하세요 여러분.');
     done();
   });
 });

@@ -20,13 +20,15 @@
 
       toastBox.style.display = 'none';
       toastBox.style.cursor = 'pointer';
-      toastBox.style.background = '#000000c2';
+      toastBox.style.background = 'rgba(0, 0, 0, 0.76)';
       toastBox.style.color = 'white';
       toastBox.style.padding = '15px';
       toastBox.style.borderRadius = '15px';
       toastBox.style.marginLeft = '15px';
       toastBox.style.marginRight = '15px';
       toastBox.style.marginBottom = '30px';
+      toastBox.style.fontFamily = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+      toastBox.style.fontSize = '1rem';
 
       text.style.display = 'inline';
 
