@@ -14,7 +14,7 @@ describe('vanilla-toast test', function(){
 
   it('should be run ui', function(done){
     vanillaToast.initElement();
-    vanillaToast.show('asdf\nasdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdfasdf asdf');
+    vanillaToast.show('hello world');
     //vanillaToast.showCloseButton();
     done();
   });
