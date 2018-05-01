@@ -2,6 +2,7 @@ vanilla-toast
 ========
 
 A toast notification module writtern in vanilla js that has no dependencies on other libraries.
+
 [Demo site](https://talsu.github.io/vanilla-toast)
 
 ## Installation
@@ -10,7 +11,7 @@ A toast notification module writtern in vanilla js that has no dependencies on o
 $ npm install vanilla-toast
 ```
 
-## Useage
+## Usage
 ### show
 ```javascript
 vanillaToast.show('Hello world');
@@ -24,3 +25,4 @@ vanillaToast.info('info message');
 vanillaToast.warning('warning message');
 vanillaToast.error('error message');
 ```
+### option
