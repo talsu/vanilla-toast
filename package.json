@@ -1,0 +1,25 @@
+{
+  "name": "vanilla-toast",
+  "version": "0.1.0",
+  "description": "Vanilla JS Toast notification module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talsu/vanilla-toast.git"
+  },
+  "keywords": [
+    "toast",
+    "vanilla",
+    "popup",
+    "notification"
+  ],
+  "author": "talsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talsu/vanilla-toast/issues"
+  },
+  "homepage": "https://github.com/talsu/vanilla-toast#readme"
+}
