@@ -1,1 +1,26 @@
-<h1>Hello world</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>vanilla-toast</title>
+</head>
+<body>
+  <script src="../vanilla-toast.js"></script>
+  <script>
+    vanillaToast
+      .show('Hello, this is vanilla-toast.')
+      .default('A toast notification module writtern in vanilla js that has no dependencies on other libraries.')
+      .default('10', {duration:700, fadeDuration:200})
+      .info('9', {duration:700, fadeDuration:180})
+      .info('8', {duration:500, fadeDuration:160})
+      .info('7', {duration:500, fadeDuration:140})
+      .success('6', {duration:400, fadeDuration:120, fontSize:'1.5rem'})
+      .success('5', {duration:400, fadeDuration:100, fontSize:'1.5rem'})
+      .success('4', {duration:400, fadeDuration:70, fontSize:'1.5rem'})
+      .warning('3', {duration:300, fadeDuration:50, fontSize:'2rem'})
+      .warning('2', {duration:300, fadeDuration:1, fontSize:'2rem'})
+      .error('1', {duration:300, fadeDuration:1, fontSize:'3rem', closeButton:false})
+      .error('vanilla-toast', {fontSize:'3rem', closeButton:false});
+  </script>
+</body>
+</html>

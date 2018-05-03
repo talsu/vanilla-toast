@@ -12,8 +12,10 @@
         background: 'rgba(0, 0, 0, 0.76)',
         color: 'white',
         fadeDuration: 400,
-        fadeStep: 0.01,
-        duration: 2000
+        fadeInterval: 16,
+        duration: 2000,
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+        fontSize: '1rem'
       },
       success: {
         background: 'rgb(92, 184, 92, 0.76)',
@@ -52,18 +54,14 @@
       toastBox.setAttribute("id", "vanilla-toast-box");
       toastBox.style.display = 'none';
       toastBox.style.cursor = 'pointer';
-      toastBox.style.background = constants.default.background;
-      toastBox.style.color = constants.default.color;
       toastBox.style.padding = '15px';
       toastBox.style.borderRadius = '15px';
       toastBox.style.marginLeft = '15px';
       toastBox.style.marginRight = '15px';
       toastBox.style.marginBottom = '30px';
-      toastBox.style.fontFamily = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 
       text.setAttribute("id", "vanilla-toast-text");
       text.style.display = 'inline';
-      text.style.fontSize = '1rem';
 
       closeButton.setAttribute("id", "vanilla-toast-close-button");
       closeButton.innerHTML = '&#10006;';
@@ -87,24 +85,29 @@
         text : text,
         closeButton : closeButton
       };
+
+      this._setStyle(constants.default);
     };
 
     VanillaToast.prototype._setStyle = function (option) {
       this.element.toastBox.style.background = option.background || constants.default.background;
       this.element.toastBox.style.color = option.color || constants.default.color;
+      this.element.toastBox.style.fontFamily = option.fontFamily || constants.default.fontFamily;
+      this.element.text.style.fontSize = option.fontSize || constants.default.fontSize;
     };
 
     // show toast
     VanillaToast.prototype.show = function (text, option, callback) {
       var self = this;
+      if (!self.element) self.initElement();
       if (!option) option = {};
 
       // enqueue
       self.queue.enqueue(function(next) {
         // time setting
         var fadeDuration = option.fadeDuration || constants.default.fadeDuration;
-        var fadeStep = option.fadeStep || constants.default.fadeStep;
-        var fadeInterval = fadeDuration*fadeStep;
+        var fadeInterval = option.fadeInterval || constants.default.fadeInterval;
+        var fadeStep = Math.min(fadeInterval / fadeDuration, 1);
         var duration = option.duration || constants.default.duration;
 
         // close button setting
@@ -122,13 +125,31 @@
         // set styles
         self._setStyle(option);
 
+        // timeoutId
+        var timeoutId = null;
+
+        // duration timeout callback.
+        var timeoutCallback = function() {
+          // release click clickHandler
+          self.element.toastBox.removeEventListener('click', clickHandler);
+          self.hide(option, function() {
+            if (callback) callback();
+            next();
+          });
+        };
+
+        // click for close handler
+        var clickHandler = function() {
+          if (!timeoutId) return;
+          clearTimeout(timeoutId);
+          timeoutCallback();
+        };
+
         // start fade in.
         self._fade(s, fadeStep, fadeInterval, function() {
           // show while duration time and hide.
-          setTimeout(function() { self.hide(option, function() {
-            if (callback) callback();
-            next();
-          }); }, duration);
+          self.element.toastBox.addEventListener('click', clickHandler);
+          timeoutId = setTimeout(timeoutCallback, duration);
         });
       });
 
@@ -142,8 +163,8 @@
 
       // time setting
       var fadeDuration = option.fadeDuration || constants.default.fadeDuration;
-      var fadeStep = option.fadeStep || constants.default.fadeStep;
-      var fadeInterval = fadeDuration*fadeStep;
+      var fadeInterval = option.fadeInterval || constants.default.fadeInterval;
+      var fadeStep = Math.min(fadeInterval / fadeDuration, 1);
 
       // set visible
       var s = self.element.toastBox.style;
@@ -173,10 +194,8 @@
     };
 
     // create preset methods
-    var showPreset = ['default', 'success', 'info', 'warning', 'error'];
-    for (var i = 0; i < showPreset.length; ++i) {
-      (function(){
-        var preset = showPreset[i];
+    for (var item in constants) {
+      (function(preset){
         VanillaToast.prototype[preset] = function (text, option, callback) {
           if (!option) option = {};
 
@@ -188,14 +207,8 @@
 
           return this.show(text, option, callback);
         };
-      })();
+      })(item);
     }
-
-    // for test
-    VanillaToast.prototype.some = function (p) {
-      console.log(p);
-      return p;
-    };
 
     return VanillaToast;
   })();
