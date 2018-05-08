@@ -1,9 +1,10 @@
-(function () {
+(function() {
   "use strict";
 
-  var VanillaToast = (function () {
+  var VanillaToast = (function() {
     function VanillaToast() {
       this.queue = new TaskQueue();
+      this.cancellationTokens = [];
       this.element = null;
     }
 
@@ -30,7 +31,7 @@
       }
     };
 
-    VanillaToast.prototype.initElement = function (selector) {
+    VanillaToast.prototype.initElement = function(selector) {
       // create elements.
       var container = document.createElement('div');
       var toastBox = document.createElement('div');
@@ -57,25 +58,40 @@
       }
 
       this.element = {
-        container : container,
-        toastBox : toastBox,
-        text : text,
-        closeButton : closeButton
+        container: container,
+        toastBox: toastBox,
+        text: text,
+        closeButton: closeButton
       };
 
       this._setStyle(constants.default);
     };
 
-    VanillaToast.prototype._setStyle = function (option) {
+    VanillaToast.prototype._setStyle = function(option) {
       this.element.toastBox.className = option.className || constants.default.className;
     };
 
+    // cancel current showing toast.
+    VanillaToast.prototype.cancel = function() {
+      if (this.cancellationTokens.length) this.cancellationTokens[0].cancel();
+    };
+
+    // cancel all enqueued toasts.
+    VanillaToast.prototype.cancelAll = function() {
+      var length = this.cancellationTokens.length;
+      for (var i = 0;i < length; ++i) {
+        (function(token){ token.cancel(); })(this.cancellationTokens[length - i - 1]);
+      }
+    };
+
     // show toast
-    VanillaToast.prototype.show = function (text, option, callback) {
+    VanillaToast.prototype.show = function(text, option, callback) {
       var self = this;
       if (!self.element) self.initElement();
       if (!option) option = {};
-
+      if (option.immediately) self.cancelAll();
+      
+      var cancellationToken = new CancellationToken();
       // enqueue
       self.queue.enqueue(function(next) {
         // time setting
@@ -104,34 +120,43 @@
 
         // duration timeout callback.
         var timeoutCallback = function() {
+          timeoutId = null;
           // release click clickHandler
-          self.element.toastBox.removeEventListener('click', clickHandler);
-          self.hide(option, function() {
+          self.element.toastBox.removeEventListener('click', cancelHandler);
+          self._hide(option, cancellationToken, function() {
             if (callback) callback();
+            self.cancellationTokens.shift().dispose();
             next();
           });
         };
 
         // click for close handler
-        var clickHandler = function() {
+        var cancelHandler = function() {
           if (!timeoutId) return;
           clearTimeout(timeoutId);
           timeoutCallback();
         };
 
         // start fade in.
-        self._fade(s, fadeStep, fadeInterval, function() {
+        self._fade(s, fadeStep, fadeInterval, cancellationToken, function() {
           // show while duration time and hide.
-          self.element.toastBox.addEventListener('click', clickHandler);
-          timeoutId = setTimeout(timeoutCallback, duration);
+          self.element.toastBox.addEventListener('click', cancelHandler);
+          if (cancellationToken.isCancellationRequested) {
+            timeoutCallback();
+          } else {
+            timeoutId = setTimeout(timeoutCallback, duration);
+            cancellationToken.register(function() { cancelHandler(); });
+          }
         });
       });
+
+      self.cancellationTokens.push(cancellationToken);
 
       return self;
     };
 
     // hide toast
-    VanillaToast.prototype.hide = function (option, callback) {
+    VanillaToast.prototype._hide = function(option, cancellationToken, callback) {
       var self = this;
       if (!option) option = {};
 
@@ -145,7 +170,7 @@
       s.opacity = 1;
 
       // start fade out and call callback function.
-      self._fade(s, -fadeStep, fadeInterval, function () {
+      self._fade(s, -fadeStep, fadeInterval, cancellationToken, function() {
         s.display = 'none';
         if (callback) callback();
       });
@@ -154,23 +179,34 @@
     };
 
     // run fade animation
-    VanillaToast.prototype._fade = function (style, step, interval, callback) {
+    VanillaToast.prototype._fade = function(style, step, interval, cancellationToken, callback) {
       (function fade() {
+        if (cancellationToken.isCancellationRequested) {
+          style.opacity = step < 0 ? 0 : 1;
+          if (callback) callback();
+          return;
+        }
         style.opacity = Number(style.opacity) + step;
         if (step < 0 && style.opacity < 0) {
           if (callback) callback();
         } else if (step > 0 && style.opacity >= 1) {
           if (callback) callback();
         } else {
-          setTimeout(fade, interval);
+          var timeoutId = setTimeout(function(){ timeoutId = null; fade(); }, interval);
+          cancellationToken.register(function() {
+            if (!timeoutId) return;
+            clearTimeout(timeoutId);
+            timeoutId = null;
+            if (callback) callback();
+          });
         }
       })();
     };
 
     // create preset methods
     for (var item in constants) {
-      (function(preset){
-        VanillaToast.prototype[preset] = function (text, option, callback) {
+      (function(preset) {
+        VanillaToast.prototype[preset] = function(text, option, callback) {
           if (!option) option = {};
 
           // copy preset options
@@ -187,15 +223,38 @@
     return VanillaToast;
   })();
 
+  var CancellationToken = (function() {
+    function CancellationToken() {
+      this.isCancellationRequested = false;
+      this.cancelCallbacks = [];
+    }
+
+    CancellationToken.prototype.cancel = function() {
+      this.isCancellationRequested = true;
+      var copiedCallbacks = this.cancelCallbacks.slice();
+      while (copiedCallbacks.length) copiedCallbacks.shift()();
+    };
+
+    CancellationToken.prototype.register = function(callback) {
+      this.cancelCallbacks.push(callback);
+    };
+
+    CancellationToken.prototype.dispose = function() {
+      while (this.cancelCallbacks.length) this.cancelCallbacks.shift();
+    };
+
+    return CancellationToken;
+  })();
+
   // TaskQueue from https://github.com/talsu/async-task-queue
-  var TaskQueue = (function () {
+  var TaskQueue = (function() {
     function TaskQueue() {
       this.queue = [];
       this.isExecuting = false;
     }
 
     // enqueue job. run immediately.
-    TaskQueue.prototype.enqueue = function (job) {
+    TaskQueue.prototype.enqueue = function(job) {
       // enqueue.
       this.queue.push(job);
       // call execute.
@@ -203,7 +262,7 @@
     };
 
     // Dequeue and execute job.
-    function dequeueAndExecute (self) {
+    function dequeueAndExecute(self) {
       if (self.isExecuting) return;
 
       // Dequeue Job.
