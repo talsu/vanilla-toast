@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <title>vanilla-toast</title>
   <link rel="stylesheet" type="text/css" href="./vanilla-toast.css">
+  <style>
+    #vanilla-toast.custom {
+      font-size: 3rem;
+      background-color: #159957;
+      background-image: linear-gradient(120deg, #155799, #159957);
+    }
+  </style>
 </head>
 <body>
   <script src="./vanilla-toast.js"></script>
@@ -15,13 +22,13 @@
       .info('9', {duration:700, fadeDuration:180})
       .info('8', {duration:500, fadeDuration:160})
       .info('7', {duration:500, fadeDuration:140})
-      .success('6', {duration:400, fadeDuration:120, fontSize:'1.5rem'})
-      .success('5', {duration:400, fadeDuration:100, fontSize:'1.5rem'})
-      .success('4', {duration:400, fadeDuration:70, fontSize:'1.5rem'})
-      .warning('3', {duration:300, fadeDuration:50, fontSize:'2rem'})
-      .warning('2', {duration:300, fadeDuration:1, fontSize:'2rem'})
-      .error('1', {duration:300, fadeDuration:1, fontSize:'3rem', closeButton:false})
-      .error('vanilla-toast', {fontSize:'3rem', closeButton:false});
+      .success('6', {duration:400, fadeDuration:120})
+      .success('5', {duration:400, fadeDuration:100})
+      .success('4', {duration:400, fadeDuration:70})
+      .warning('3', {duration:300, fadeDuration:50,})
+      .warning('2', {duration:300, fadeDuration:1})
+      .error('1', {duration:300, fadeDuration:1, closeButton:false})
+      .show('vanilla-toast', {className:'custom'});
   </script>
 </body>
 </html>

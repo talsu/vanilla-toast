@@ -41,7 +41,7 @@
 
       container.setAttribute("id", "vanilla-toast-container");
 
-      toastBox.setAttribute("id", "vanilla-toast-box");
+      toastBox.setAttribute("id", "vanilla-toast");
 
       text.setAttribute("id", "vanilla-toast-text");
 
