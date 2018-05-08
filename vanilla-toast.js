@@ -1,6 +1,7 @@
 (function() {
   "use strict";
 
+  // VanillaToast class
   var VanillaToast = (function() {
     function VanillaToast() {
       this.queue = new TaskQueue();
@@ -31,8 +32,8 @@
       }
     };
 
+    // create elements.
     VanillaToast.prototype.initElement = function(selector) {
-      // create elements.
       var container = document.createElement('div');
       var toastBox = document.createElement('div');
       var text = document.createElement('div');
@@ -64,11 +65,7 @@
         closeButton: closeButton
       };
 
-      this._setStyle(constants.default);
-    };
-
-    VanillaToast.prototype._setStyle = function(option) {
-      this.element.toastBox.className = option.className || constants.default.className;
+      _setStyle(this, constants.default);
     };
 
     // cancel current showing toast.
@@ -79,8 +76,10 @@
     // cancel all enqueued toasts.
     VanillaToast.prototype.cancelAll = function() {
       var length = this.cancellationTokens.length;
-      for (var i = 0;i < length; ++i) {
-        (function(token){ token.cancel(); })(this.cancellationTokens[length - i - 1]);
+      for (var i = 0; i < length; ++i) {
+        (function(token) {
+          token.cancel();
+        })(this.cancellationTokens[length - i - 1]);
       }
     };
 
@@ -89,8 +88,9 @@
       var self = this;
       if (!self.element) self.initElement();
       if (!option) option = {};
+      // if immediately show option is on, cancel all previous toasts.
       if (option.immediately) self.cancelAll();
-      
+
       var cancellationToken = new CancellationToken();
       // enqueue
       self.queue.enqueue(function(next) {
@@ -113,7 +113,7 @@
         s.display = 'inline-block';
 
         // set styles
-        self._setStyle(option);
+        _setStyle(self, option);
 
         // timeoutId
         var timeoutId = null;
@@ -123,7 +123,7 @@
           timeoutId = null;
           // release click clickHandler
           self.element.toastBox.removeEventListener('click', cancelHandler);
-          self._hide(option, cancellationToken, function() {
+          _hide(self, option, cancellationToken, function() {
             if (callback) callback();
             self.cancellationTokens.shift().dispose();
             next();
@@ -138,14 +138,16 @@
         };
 
         // start fade in.
-        self._fade(s, fadeStep, fadeInterval, cancellationToken, function() {
+        _fade(s, fadeStep, fadeInterval, cancellationToken, function() {
           // show while duration time and hide.
           self.element.toastBox.addEventListener('click', cancelHandler);
           if (cancellationToken.isCancellationRequested) {
             timeoutCallback();
           } else {
             timeoutId = setTimeout(timeoutCallback, duration);
-            cancellationToken.register(function() { cancelHandler(); });
+            cancellationToken.register(function() {
+              cancelHandler();
+            });
           }
         });
       });
@@ -153,54 +155,6 @@
       self.cancellationTokens.push(cancellationToken);
 
       return self;
-    };
-
-    // hide toast
-    VanillaToast.prototype._hide = function(option, cancellationToken, callback) {
-      var self = this;
-      if (!option) option = {};
-
-      // time setting
-      var fadeDuration = option.fadeDuration || constants.default.fadeDuration;
-      var fadeInterval = option.fadeInterval || constants.default.fadeInterval;
-      var fadeStep = Math.min(fadeInterval / fadeDuration, 1);
-
-      // set visible
-      var s = self.element.toastBox.style;
-      s.opacity = 1;
-
-      // start fade out and call callback function.
-      self._fade(s, -fadeStep, fadeInterval, cancellationToken, function() {
-        s.display = 'none';
-        if (callback) callback();
-      });
-
-      return self;
-    };
-
-    // run fade animation
-    VanillaToast.prototype._fade = function(style, step, interval, cancellationToken, callback) {
-      (function fade() {
-        if (cancellationToken.isCancellationRequested) {
-          style.opacity = step < 0 ? 0 : 1;
-          if (callback) callback();
-          return;
-        }
-        style.opacity = Number(style.opacity) + step;
-        if (step < 0 && style.opacity < 0) {
-          if (callback) callback();
-        } else if (step > 0 && style.opacity >= 1) {
-          if (callback) callback();
-        } else {
-          var timeoutId = setTimeout(function(){ timeoutId = null; fade(); }, interval);
-          cancellationToken.register(function() {
-            if (!timeoutId) return;
-            clearTimeout(timeoutId);
-            timeoutId = null;
-            if (callback) callback();
-          });
-        }
-      })();
     };
 
     // create preset methods
@@ -220,9 +174,67 @@
       })(item);
     }
 
+    // private methods.
+
+    // set style
+    function _setStyle(self, option) {
+      self.element.toastBox.className = option.className || constants.default.className;
+    };
+
+    // hide toast
+    function _hide(self, option, cancellationToken, callback) {
+      if (!option) option = {};
+
+      // time setting
+      var fadeDuration = option.fadeDuration || constants.default.fadeDuration;
+      var fadeInterval = option.fadeInterval || constants.default.fadeInterval;
+      var fadeStep = Math.min(fadeInterval / fadeDuration, 1);
+
+      // set visible
+      var s = self.element.toastBox.style;
+      s.opacity = 1;
+
+      // start fade out and call callback function.
+      _fade(s, -fadeStep, fadeInterval, cancellationToken, function() {
+        s.display = 'none';
+        if (callback) callback();
+      });
+
+      return self;
+    };
+
+    // run fade animation
+    function _fade(style, step, interval, cancellationToken, callback) {
+      (function fade() {
+        if (cancellationToken.isCancellationRequested) {
+          style.opacity = step < 0 ? 0 : 1;
+          if (callback) callback();
+          return;
+        }
+        style.opacity = Number(style.opacity) + step;
+        if (step < 0 && style.opacity < 0) {
+          if (callback) callback();
+        } else if (step > 0 && style.opacity >= 1) {
+          if (callback) callback();
+        } else {
+          var timeoutId = setTimeout(function() {
+            timeoutId = null;
+            fade();
+          }, interval);
+          cancellationToken.register(function() {
+            if (!timeoutId) return;
+            clearTimeout(timeoutId);
+            timeoutId = null;
+            if (callback) callback();
+          });
+        }
+      })();
+    };
+
     return VanillaToast;
   })();
 
+  // CancellationToken class
   var CancellationToken = (function() {
     function CancellationToken() {
       this.isCancellationRequested = false;
@@ -246,7 +258,7 @@
     return CancellationToken;
   })();
 
-  // TaskQueue from https://github.com/talsu/async-task-queue
+  // TaskQueue class from https://github.com/talsu/async-task-queue
   var TaskQueue = (function() {
     function TaskQueue() {
       this.queue = [];
