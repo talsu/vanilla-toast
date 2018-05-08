@@ -7,14 +7,22 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 describe('vanilla-toast test', function(){
-  it('should be success', function(done){
-    assert.equal(vanillaToast.some('asdf'), 'asdf');
-    done();
+  it('should be run with default duration.', function(done){
+    this.timeout(10000);
+    vanillaToast.show(
+      'default duration.',
+      null,
+      function() {
+        done();
+      });
   });
-
-  it('should be run ui', function(done){
-    vanillaToast.initElement();
-    vanillaToast.show('hello world. 안녕하세요 여러분.');
-    done();
+  it('should be run with custom duration.', function(done){
+    this.timeout(5000);
+    vanillaToast.show(
+      'custom duration - {duration:3000, fadeDuration:400}',
+      {duration:3000, fadeDuration:400},
+      function() {
+        done();
+      });
   });
 });
