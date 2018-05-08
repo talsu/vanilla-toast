@@ -9,29 +9,22 @@
 
     var constants = {
       default: {
-        background: 'rgba(0, 0, 0, 0.76)',
-        color: 'white',
+        className: 'default',
         fadeDuration: 400,
         fadeInterval: 16,
-        duration: 2000,
-        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        fontSize: '1rem'
+        duration: 2000
       },
       success: {
-        background: 'rgb(92, 184, 92, 0.76)',
-        color: 'white',
+        className: 'success',
       },
       info: {
-        background: 'rgb(91, 192, 222, 0.76)',
-        color: 'white',
+        className: 'info',
       },
       warning: {
-        background: 'rgb(236, 151, 31, 0.76)',
-        color: 'white',
+        className: 'warning',
       },
       error: {
-        background: 'rgb(201, 48, 44, 0.76)',
-        color: 'white',
+        className: 'error',
         duration: 3000,
         closeButton: true
       }
@@ -45,29 +38,13 @@
       var closeButton = document.createElement('span');
 
       container.setAttribute("id", "vanilla-toast-container");
-      container.style.textAlign = 'center';
-      container.style.bottom = '0px';
-      container.style.left = '0px';
-      container.style.right = '0px';
-      container.style.position = 'fixed';
 
       toastBox.setAttribute("id", "vanilla-toast-box");
-      toastBox.style.display = 'none';
-      toastBox.style.cursor = 'pointer';
-      toastBox.style.padding = '15px';
-      toastBox.style.borderRadius = '15px';
-      toastBox.style.marginLeft = '15px';
-      toastBox.style.marginRight = '15px';
-      toastBox.style.marginBottom = '30px';
 
       text.setAttribute("id", "vanilla-toast-text");
-      text.style.display = 'inline';
 
       closeButton.setAttribute("id", "vanilla-toast-close-button");
       closeButton.innerHTML = '&#10006;';
-      closeButton.style.display = 'none';
-      closeButton.style.marginLeft = '15px';
-      closeButton.style.fontSize = '15px';
 
       toastBox.appendChild(text);
       toastBox.appendChild(closeButton);
@@ -90,10 +67,7 @@
     };
 
     VanillaToast.prototype._setStyle = function (option) {
-      this.element.toastBox.style.background = option.background || constants.default.background;
-      this.element.toastBox.style.color = option.color || constants.default.color;
-      this.element.toastBox.style.fontFamily = option.fontFamily || constants.default.fontFamily;
-      this.element.text.style.fontSize = option.fontSize || constants.default.fontSize;
+      this.element.toastBox.className = option.className || constants.default.className;
     };
 
     // show toast
