@@ -13,6 +13,11 @@ $ npm install vanilla-toast
 ```
 
 Add javascript and css file on your html document.
+```html
+<link rel="stylesheet" type="text/css" href="./vanilla-toast.css">
+...
+<script src="./vanilla-toast.js"></script>
+```
 
 ## API Documentation
 ### .show( text [, option] [, callback] )
