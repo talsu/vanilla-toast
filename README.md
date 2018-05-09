@@ -7,14 +7,87 @@ A toast notification module writtern in vanilla js that has no dependencies on o
 
 ## Installation
 
+Download or install with npm package manager.
 ```bash
 $ npm install vanilla-toast
 ```
 
-## Usage
-### show
+Add javascript and css file on your html document.
+
+## API Documentation
+### .show( text [, option] [, callback] )
+Show toast using text. If you have toast present, or call `.show()` multiple times at a time, the built-in queue will be used to show it sequentially.
+
+#### text
+Type: **String**    
+A text to show in toast.
+
+#### option
+Type: **PlainObject**    
+A map of additional options
+
+**duration** (default: `2000`)    
+Type: **Number**    
+A number that determines the milliseconds at which toast is shown. (except fade animation)
+
+**fadeDuration** (default: `400`)    
+Type: **Number**    
+A number that determines the milliseconds of the fade animation.
+
+**immediately** (default: `false`)    
+Type: **Boolean**    
+A boolean value that causes all currently visible or queued toast to be canceled and the new toast visible immediately.
+
+**className** (default: `'default'`)    
+Type: **String**    
+A string of class name to be set on the toast element for custom CSS styling.
+
+#### callback
+Type: **Function**    
+A function to be called after the toast show is complete.
+
+#### Examples
+Show with default options.
 ```javascript
 vanillaToast.show('Hello world');
+```
+
+Show toast 10 seconds and fade-in, fade-out animation for 0.5 seconds each. (total 11 seconds)
+```javascript
+vanillaToast.show('Show 10 seconds.', { duration:10000, fadeDuration:500 });
+```
+
+Write console log after toast show is complete.
+```javascript
+vanillaToast.show('Call callback after 3 seconds',
+  {duration:2000, fadeDuration:500},
+  function() {
+    console.log('complete!');
+  }
+);
+```
+
+Show multiple toast sequentially using built-in queue.
+```javascript
+// Call show method multiple times at a time.
+vanillaToast.show('First', {duration:5000});
+vanillaToast.show('Second');
+
+// With method chain.
+vanillaToast
+  .show('Hello, this is vanilla-toast.')
+  .default('A toast notification module.')
+  .default('10', {duration:700, fadeDuration:200})
+  .info('9', {duration:700, fadeDuration:180})
+  .info('8', {duration:500, fadeDuration:160})
+  .info('7', {duration:500, fadeDuration:140})
+  .success('6', {duration:400, fadeDuration:120})
+  .success('5', {duration:400, fadeDuration:100})
+  .success('4', {duration:400, fadeDuration:70})
+  .warning('3', {duration:300, fadeDuration:50,})
+  .warning('2', {duration:300, fadeDuration:1})
+  .error('1', {duration:300, fadeDuration:1, closeButton:false})
+  .show('vanilla-toast', {className:'custom'});
 ```
 
 ### preset methods
@@ -25,4 +98,3 @@ vanillaToast.info('info message');
 vanillaToast.warning('warning message');
 vanillaToast.error('error message');
 ```
-### option

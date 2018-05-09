@@ -14,7 +14,8 @@
         className: 'default',
         fadeDuration: 400,
         fadeInterval: 16,
-        duration: 2000
+        duration: 2000,
+        immediately: false
       },
       success: {
         className: 'success',
