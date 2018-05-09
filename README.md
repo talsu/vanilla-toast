@@ -26,19 +26,23 @@ A text to show in toast.
 Type: **PlainObject**    
 A map of additional options
 
-**duration** (default: `2000`)    
+* **duration** (default: `2000` )    
 Type: **Number**    
 A number that determines the milliseconds at which toast is shown. (except fade animation)
 
-**fadeDuration** (default: `400`)    
+* **fadeDuration** (default: `400` )    
 Type: **Number**    
 A number that determines the milliseconds of the fade animation.
 
-**immediately** (default: `false`)    
+* **closeButton** (default: `false` )    
+Type: **Boolean**    
+A boolean value that determines close button visible.
+
+* **immediately** (default: `false` )    
 Type: **Boolean**    
 A boolean value that causes all currently visible or queued toast to be canceled and the new toast visible immediately.
 
-**className** (default: `'default'`)    
+* **className** (default: `'default'` )    
 Type: **String**    
 A string of class name to be set on the toast element for custom CSS styling.
 
@@ -84,17 +88,73 @@ vanillaToast
   .success('6', {duration:400, fadeDuration:120})
   .success('5', {duration:400, fadeDuration:100})
   .success('4', {duration:400, fadeDuration:70})
-  .warning('3', {duration:300, fadeDuration:50,})
+  .warning('3', {duration:300, fadeDuration:50})
   .warning('2', {duration:300, fadeDuration:1})
   .error('1', {duration:300, fadeDuration:1, closeButton:false})
   .show('vanilla-toast', {className:'custom'});
 ```
 
-### preset methods
+### .cancel( )
+Cancel current showing toast immediately.
+
+### .cancelAll( )
+Cancel current and all queued toast immediately.
+
+### .default( text [, option] [, callback] )
+Equalvalent to `.show()`
+
+### .success( text [, option] [, callback] )
+Equalvalent to `.show()` but uses additional following option.
 ```javascript
-vanillaToast.default('Hello world'); // equalvalent to show()
-vanillaToast.success('success message');
-vanillaToast.info('info message');
-vanillaToast.warning('warning message');
-vanillaToast.error('error message');
+{ className: 'success' }
+```
+
+### .info( text [, option] [, callback] )
+Equalvalent to `.show()` but uses additional following option.
+```javascript
+{ className: 'info' }
+```
+
+### .warning( text [, option] [, callback] )
+Equalvalent to `.show()` but uses additional following option.
+```javascript
+{ className: 'warning' }
+```
+
+### .error( text [, option] [, callback] )
+Equalvalent to `.show()` but uses additional following option.
+```javascript
+{
+  className: 'error',
+  duration: 3000,
+  closeButton: true
+}
+```
+
+## Styling
+vanilla-toast creates the following DOM structure. With this, you can freely stylize with CSS.
+```html
+<div id="vanilla-toast-container">
+  <div id="vanilla-toast" class="default">
+    <div id="vanilla-toast-text">some text.</div>
+    <span id="vanilla-toast-close-button" style="display: none;">✖</span>
+  </div>
+</div>
+```
+
+### Example
+
+Show toast with custom style.
+```html
+<style>
+  #vanilla-toast.custom {
+    font-size: 3rem;
+    background-color: #159957;
+    background-image: linear-gradient(120deg, #155799, #159957);
+  }
+</style>
+...
+<script>
+  vanillaToast.show('Custom styled toast', {className:'custom'});
+</script>
 ```

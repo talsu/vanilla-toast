@@ -15,16 +15,17 @@
         fadeDuration: 400,
         fadeInterval: 16,
         duration: 2000,
+        closeButton: false,
         immediately: false
       },
       success: {
-        className: 'success',
+        className: 'success'
       },
       info: {
-        className: 'info',
+        className: 'info'
       },
       warning: {
-        className: 'warning',
+        className: 'warning'
       },
       error: {
         className: 'error',
