@@ -1,6 +1,8 @@
 vanilla-toast
 ========
 
+[![npm version](https://badge.fury.io/js/vanilla-toast.svg)](https://badge.fury.io/js/vanilla-toast)
+
 A toast notification module writtern in vanilla js that has no dependencies on other libraries.
 
 [Demo site](https://talsu.github.io/vanilla-toast)

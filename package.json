@@ -1,7 +1,7 @@
 {
   "name": "vanilla-toast",
-  "version": "0.1.0",
-  "description": "Vanilla JS Toast notification module.",
+  "version": "0.5.0",
+  "description": "A toast notification module writtern in Vanilla JS that has no dependencies on other libraries.",
   "main": "vanilla-toast.js",
   "scripts": {
     "test": "mocha"
